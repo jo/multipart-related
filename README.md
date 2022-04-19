@@ -8,6 +8,7 @@ For Decoding Gzip bodies, we use a WASM implementation: [Wasm-Gzip](https://gith
 This is a research project and not meant to be production ready (yet).
 
 ## Example
+You can play with the live example: https://jo.github.io/multipart-unpacker/
 
 ```js
 import MultipartUnpacker from './multipart-unpacker.js'
