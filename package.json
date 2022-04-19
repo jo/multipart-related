@@ -1,0 +1,30 @@
+{
+  "name": "multipart-unpacker",
+  "version": "1.0.0",
+  "description": "Parse `multipart/related` response in the browser",
+  "main": "multipart-unpacker.js",
+  "type": "module",
+  "keywords": [
+    "multipart",
+    "multipart/related",
+    "browser"
+  ],
+  "author": "Johannes J. Schmidt",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jo/multipart-unpacker"
+  },
+  "bugs": {
+    "url": "https://github.com/jo/multipart-unpacker/issues"
+  },
+  "homepage": {
+    "url": "https://github.com/jo/multipart-unpacker"
+  },
+  "files": [
+    "multipart-unpacker.js",
+    "wasm_gzip.js",
+    "wasm_gzip_bg.wasm",
+    "LICENSE"
+  ]
+}

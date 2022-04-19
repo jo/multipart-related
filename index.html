@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8>
+  <style>
+    body { margin: 10vh 10vw; }
+    input { width: 100%; box-sizing: border-box; }
+  </style>
+</head>
+<h1>Parsing multipart/related responses</h1>
+<p>This parses a <code>multipart/related</code> response as sent from CouchDB. It operates on raw bytes, in a streaming manner.</p>
+<label>
+  Type an URL to a <code>multipart/related</code> resource:
+  <input id=url-input type=url>
+</label>
+<div id=output-div></div>
+<script type=module>
+  import MultipartUnpacker from './multipart-unpacker.js'
+
+  // display the parsed parts in the html page
+  const outputElement = document.getElementById('output-div')
+  let lastListElement
+  const updateDom = ({ json, blob, filename }) => {
+    if (json) {
+      const div = document.createElement('div')
+      const pre = document.createElement('pre')
+      const text = JSON.stringify(json, null, 2)
+      pre.appendChild(document.createTextNode(text))
+      div.appendChild(pre)
+      lastListElement = document.createElement('ol')
+      div.appendChild(lastListElement)
+      outputElement.appendChild(div)
+    } else if (blob && filename) {
+      const li = document.createElement('li')
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.appendChild(document.createTextNode(filename))
+      li.appendChild(a)
+      lastListElement.appendChild(li)
+    }
+  }
+
+  const fetchAndParse = async (url, headers) => {
+    outputElement.innerHTML = ''
+
+    // fetch the multipart response
+    const response = await fetch(url, { headers })
+
+    // get Content-Type header
+    const contentType = response.headers.get('Content-Type')
+
+    // initialize the multipart parser
+    const unpacker = new MultipartUnpacker(contentType, updateDom)
+
+    await unpacker.init()
+
+    // get the response body stream
+    const reader = response.body.getReader()
+    
+    // tie together the process stream
+    const process = ({ value, done }) => {
+      unpacker.read(value)
+
+      if (!done) {
+        return reader.read().then(process)
+      }
+    }
+    // and kick off processing
+    reader.read().then(process)
+  }
+
+  // react to changes of url input
+  const urlInput = document.getElementById('url-input')
+  urlInput.onchange = async () => {
+    try {
+      const url = new URL(urlInput.value)
+      
+      const headers = {
+        Authorization: 'Basic ' + btoa(`${url.username}:${url.password}`)
+      }
+      url.username = ''
+      url.password = ''
+
+      fetchAndParse(url, headers)
+    } catch (e) {}
+  }
+
+</script>
