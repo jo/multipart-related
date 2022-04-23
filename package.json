@@ -1,9 +1,12 @@
 {
-  "name": "multipart-unpacker",
+  "name": "multipart-related",
   "version": "1.0.0",
-  "description": "Parse `multipart/related` response in the browser",
-  "main": "multipart-unpacker.js",
+  "description": "Parse `multipart/related` responses in the browser",
+  "main": "src/index.js",
   "type": "module",
+  "scripts": {
+    "test": "tap --no-cov test/*.js"
+  },
   "keywords": [
     "multipart",
     "multipart/related",
@@ -13,18 +16,15 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jo/multipart-unpacker"
+    "url": "https://github.com/jo/multipart-related"
   },
   "bugs": {
-    "url": "https://github.com/jo/multipart-unpacker/issues"
+    "url": "https://github.com/jo/multipart-related/issues"
   },
   "homepage": {
-    "url": "https://github.com/jo/multipart-unpacker"
+    "url": "https://github.com/jo/multipart-related"
   },
-  "files": [
-    "multipart-unpacker.js",
-    "wasm_gzip.js",
-    "wasm_gzip_bg.wasm",
-    "LICENSE"
-  ]
+  "devDependencies": {
+    "tap": "^16.0.1"
+  }
 }
