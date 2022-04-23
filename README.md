@@ -1,9 +1,9 @@
 # Multipart Related
-Parses `multipart/related` response in the browser. Operate on raw bytes, in a streaming manner.
-
-This avoids some methods like `pipeThrough` or `pipeTo` as they lack support on FF Android. Instead, we only rely on [ReadableStream.getReader()](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/getReader) here, which is widely supported. No Internet Explorer, though.
+Parses `multipart/related` response in the browser or node. Operate on raw bytes, in a streaming manner.
 
 This is a research project and not meant to be production ready (yet).
+
+Multipart construction is planned for the future, too.
 
 ## Example
 ```js
