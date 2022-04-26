@@ -25,10 +25,10 @@ export default class MultipartRelated {
     do {
       part = this.parser.parsePart(this.data)
       if (part) {
-        const { related, headers, data, rest } = part
+        const { boundary, headers, data, rest } = part
         this.data = rest
         parts.push({
-          related,
+          boundary,
           headers,
           data
         })

@@ -7,24 +7,25 @@ export default class MultipartRelatedParser {
     this.encoder = new TextEncoder()
     this.decoder = new TextDecoder()
 
+    const boundary = this.parseContentType(contentType)
+    this.id = boundary.id
     this.boundaries = [
-      this.parseContentType(contentType)
+      boundary
     ]
   }
 
   parseContentType (contentType) {
-    const [_, type, boundaryString] = contentType.match(/^([^;]+);\s*boundary="?([^="]+)"?/) || []
+    const [_, type, id] = contentType.match(/^([^;]+);\s*boundary="?([^="]+)"?/) || []
     if (type !== 'multipart/related') return
 
-    const boundary = this.encoder.encode(boundaryString)
+    const boundary = this.encoder.encode(id)
     
     return {
-      id: boundaryString,
+      id,
       boundary
     }
   }
 
-  // TODO: seems not to work for non-related docs
   parsePart (data) {
     if (this.boundaries.length === 0) return null
 
@@ -53,13 +54,6 @@ export default class MultipartRelatedParser {
     const { 'Content-Type': contentType } = headers
     if (!contentType) return null
 
-    // check whether this starts a related part
-    const childBoundary = this.parseContentType(contentType)
-    if (childBoundary) {
-      this.boundaries.push(childBoundary)
-      return this.parsePart(data.slice(contentPosition + 4))
-    }
-
     // check for content length, otherwise search for next boundary
     const { 'Content-Length': contentLength } = headers
     const contentEndPosition = contentLength
@@ -68,7 +62,14 @@ export default class MultipartRelatedParser {
     if (contentEndPosition === -1) return null
 
     // part not completely present yet
-    if (data.length < contentEndPosition - 2) return null
+    if (data.length < contentEndPosition) return null
+
+    // check whether this starts a related part
+    const childBoundary = this.parseContentType(contentType)
+    if (childBoundary) {
+      this.boundaries.push(childBoundary)
+      return this.parsePart(data.slice(contentPosition + 4))
+    }
 
     // check for boundary end marker
     const isBoundaryEnd = startsWithBoundaryEnd(data, boundary, contentEndPosition)
@@ -76,7 +77,6 @@ export default class MultipartRelatedParser {
       ? contentEndPosition + boundary.length + 6
       : contentEndPosition
 
-    const related = this.boundaries.length > 1 ? id : null
     if (isBoundaryEnd) this.boundaries.pop()
   
     // extract the part data
@@ -84,7 +84,7 @@ export default class MultipartRelatedParser {
     const rest = data.slice(endPosition)
 
     return {
-      related,
+      boundary: this.id === id ? null : id,
       headers,
       data: partData,
       rest

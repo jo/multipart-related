@@ -13,7 +13,9 @@ tap.test('doc', t => {
   const filename = path.join(process.cwd(), 'test/fixtures/doc.multipart')
 
   return fs.readFile(filename, (error, data) => {
-    const parts = unpacker.read(data)
+    // read in two chunks
+    const parts = unpacker.read(data.slice(0, 1000))
+      .concat(unpacker.read(data.slice(1000)))
     
     t.equal(parts.length, 4, 'correct number of parts parsed')
 

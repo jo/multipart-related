@@ -16,7 +16,7 @@ text one\r
 
   const part = parser.parsePart(data)
   t.same(part, {
-    related: null,
+    boundary: null,
     headers: {
       'Content-Type': 'text/plain'
     },
@@ -43,7 +43,7 @@ text number two\r
   const data = encoder.encode(text)
 
   const one = parser.parsePart(data)
-  t.equal(one.related, null, 'related not set')
+  t.equal(one.boundary, null, 'related not set')
   t.same(one.headers, {
     'Content-Type': 'text/plain'
   }, 'correct headers parsed')
@@ -55,7 +55,7 @@ text number two\r
 --boundary--`), 'correct data rest present')
 
   const two = parser.parsePart(one.rest)
-  t.equal(two.related, null, 'related not set')
+  t.equal(two.boundary, null, 'related not set')
   t.same(two.headers, {
     'Content-Type': 'text/plain'
   }, 'correct headers parsed')
@@ -77,7 +77,7 @@ text one and a half\r
   const data = encoder.encode(text)
 
   const part = parser.parsePart(data)
-  t.equal(part.related, null, 'related not set')
+  t.equal(part.boundary, null, 'related not set')
   t.same(part.headers, {
     'Content-Type': 'text/plain',
     'Content-Length': 12
@@ -104,7 +104,7 @@ text number two\r
   const data = encoder.encode(text)
 
   const one = parser.parsePart(data)
-  t.equal(one.related, null, 'related not set')
+  t.equal(one.boundary, null, 'related not set')
   t.same(one.headers, {
     'Content-Type': 'text/plain',
     'Content-Length': 32
@@ -141,7 +141,7 @@ text number two\r
   const data = encoder.encode(text)
 
   const one = parser.parsePart(data)
-  t.equal(one.related, 'child-boundary', 'related is set')
+  t.equal(one.boundary, 'child-boundary', 'related is set')
   t.same(one.headers, {
     'Content-Type': 'text/plain'
   }, 'correct headers parsed')
@@ -153,7 +153,7 @@ text number two\r
 --boundary--`), 'correct data rest present')
 
   const two = parser.parsePart(one.rest)
-  t.equal(two.related, null, 'related is not set')
+  t.equal(two.boundary, null, 'related is not set')
   t.same(two.headers, {
     'Content-Type': 'text/plain'
   }, 'correct headers parsed')
